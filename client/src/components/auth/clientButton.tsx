@@ -2,6 +2,7 @@
 
 interface ClientButtonProps {
   children: React.ReactNode;
+  
 }
 
 export function ClientButton({ children }: ClientButtonProps) {
