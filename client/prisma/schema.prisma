@@ -101,3 +101,11 @@ model TwoFactorConfirmation {
 
   @@unique([userId])
 }
+
+model Customer {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  fullname  String   @unique
+  duree     Int
+  createdAt DateTime @default(now())
+}
