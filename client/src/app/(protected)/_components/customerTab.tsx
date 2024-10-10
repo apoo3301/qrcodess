@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
@@ -19,6 +19,8 @@ export default function CustomersTable() {
   const [email, setEmail] = useState<string>("");
   const [fullname, setFullname] = useState<string>("");
   const [duree, setDuree] = useState<number>(0);
+  const [searchEmail, setSearchEmail] = useState<string>("");
+  const [searchName, setSearchName] = useState<string>("");
 
   const fetchCustomers = async () => {
     try {
@@ -52,6 +54,14 @@ export default function CustomersTable() {
     router.push(`/admin/${id}`);
   };
 
+  const filteredCustomers = useMemo(() => {
+    return customers.filter(
+      (customer) =>
+        customer.email.toLowerCase().includes(searchEmail.toLowerCase()) &&
+        customer.fullname.toLowerCase().includes(searchName.toLowerCase())
+    );
+  }, [customers, searchEmail, searchName]);
+
   return (
     <Card>
       <CardHeader>
@@ -82,9 +92,28 @@ export default function CustomersTable() {
           />
           <Button onClick={handleAddCustomer} className="ml-2">Add Customer</Button>
         </div>
+
+        {/* Search Inputs */}
+        <div className="mb-4">
+          <input
+            type="email"
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+            placeholder="Search by Email"
+            className="border p-2 rounded"
+          />
+          <input
+            type="text"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            placeholder="Search by Full Name"
+            className="border p-2 rounded ml-2"
+          />
+        </div>
+
         {error ? (
           <div className="text-center text-muted-foreground">{error}</div>
-        ) : customers.length === 0 ? (
+        ) : filteredCustomers.length === 0 ? (
           <div className="text-center text-muted-foreground">No customers found</div>
         ) : (
           <Table>
@@ -96,7 +125,7 @@ export default function CustomersTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {customers.map((customer) => (
+              {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id} onClick={() => handleCustomerClick(customer.id)} className="cursor-pointer">
                   <TableCell>{customer.id}</TableCell>
                   <TableCell>{customer.email}</TableCell>
