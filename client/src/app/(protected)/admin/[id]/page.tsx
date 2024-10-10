@@ -22,6 +22,7 @@ import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import Loader from "~/components/loader"; // Import your Loader component
 
 export default function CustomerDetailPage({ params }: { params: any }) {
     const { id } = params;
@@ -30,6 +31,8 @@ export default function CustomerDetailPage({ params }: { params: any }) {
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(false); // Loader state for sending email
+    const [isEditing, setIsEditing] = useState(false); // Loader state for editing
     const [customerData, setCustomerData] = useState({
         id: '',
         email: '',
@@ -52,11 +55,8 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                     createdAt: data.createdAt,
                 });
             } catch (error) {
-                if (error instanceof Error) {
-                    toast({ description: `Failed to load customer: ${error.message}`, variant: 'destructive' });
-                } else {
-                    toast({ description: 'Failed to load customer', variant: 'destructive' });
-                }
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                toast({ description: `Failed to load customer: ${errorMessage}`, variant: 'destructive' });
                 router.push('/admin');
             }
         };
@@ -82,6 +82,7 @@ export default function CustomerDetailPage({ params }: { params: any }) {
     };
 
     const handleSaveCustomer = async () => {
+        setIsEditing(true); // Start editing loading
         try {
             const response = await fetch(`/api/customers`, {
                 method: 'PUT',
@@ -101,9 +102,10 @@ export default function CustomerDetailPage({ params }: { params: any }) {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             toast({ description: `Failed to update customer: ${errorMessage}`, variant: 'destructive' });
+        } finally {
+            setIsEditing(false); // Stop editing loading
         }
     };
-    
 
     const handleEditCustomer = () => {
         setIsEditModalOpen(true);
@@ -111,6 +113,7 @@ export default function CustomerDetailPage({ params }: { params: any }) {
 
     const send = async () => {
         if (customerData.email) {
+            setLoading(true); // Start loading
             try {
                 await fetch('/api/pass', {
                     method: 'POST',
@@ -122,6 +125,9 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                 toast({ description: 'Your message has been sent.', variant: 'default', title: 'Email sent' });
             } catch (error) {
                 toast({ variant: 'destructive', title: 'Uh oh! Something went wrong.', description: 'There was a problem with your request.' });
+            } finally {
+                setLoading(false); // Stop loading
+                setIsEmailDialogOpen(false); // Close dialog after sending
             }
         } else {
             console.error('No email available');
@@ -183,7 +189,12 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                 </DropdownMenu>
             </div>
 
-            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <Dialog open={isEditModalOpen} onOpenChange={(open) => {
+                setIsEditModalOpen(open);
+                if (!open) {
+                    setCustomerData((prev) => ({ ...prev, fullName: prev.fullName, email: prev.email, duration: prev.duration })); // Reset customer data if needed
+                }
+            }}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Edit Customer</DialogTitle>
@@ -209,12 +220,17 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                         <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                             Cancel
                         </Button>
-                        <Button onClick={handleSaveCustomer}>Save</Button>
+                        <Button onClick={handleSaveCustomer} disabled={isEditing}>
+                            {isEditing ? <Loader /> : 'Save'} {/* Show loader or text */}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+            <Dialog open={isEmailDialogOpen} onOpenChange={(open) => {
+                setIsEmailDialogOpen(open);
+                if (!open) setLoading(false); // Reset loading state when closing the dialog
+            }}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Send Password</DialogTitle>
@@ -226,7 +242,9 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                         <Button variant="outline" onClick={() => setIsEmailDialogOpen(false)}>
                             Cancel
                         </Button>
-                        <Button onClick={send}>Send</Button>
+                        <Button onClick={send} disabled={loading}>
+                            {loading ? <Loader /> : 'Send'} {/* Show loader or text */}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
