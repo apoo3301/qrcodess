@@ -112,7 +112,7 @@ export default function CustomerDetailPage({ params }: { params: any }) {
     const send = async () => {
         if (customerData.email) {
             try {
-                await fetch('/api/send-pass', {
+                await fetch('/api/pass', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

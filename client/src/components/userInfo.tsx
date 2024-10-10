@@ -10,6 +10,7 @@ import { ExtendedUser } from "~/next-auth";
 import { useState } from 'react';
 import { AdminButton } from "~/app/(protected)/_components/adminButton";
 import Link from "next/link";
+import { FcCustomerSupport } from "react-icons/fc";
 
 interface UserInfoProps {
   user?: ExtendedUser;
@@ -121,6 +122,12 @@ export function UserInfo({ user, label }: UserInfoProps) {
               <Button variant="outline" className="w-full justify-start border-gray-300 hover:bg-gray-100">
                 <Activity className="mr-2 h-4 w-4" />
                 Admin
+              </Button>
+              </Link>
+              <Link href="/admin">
+              <Button variant="outline" className="w-full justify-start border-gray-300 hover:bg-gray-100">
+                <FcCustomerSupport className="mr-2 h-4 w-4" />
+                Portal
               </Button>
               </Link>
             </div>
