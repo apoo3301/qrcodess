@@ -18,7 +18,7 @@ export default function AdminPage() {
   }, [router]);
 
   return (
-    <div className="bg-white p-8 h-screen">
+    <div className="bg-white p-8 min-h-screen">
       <CustomersTable />
     </div>
   );

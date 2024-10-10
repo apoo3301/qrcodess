@@ -33,7 +33,6 @@ export const POST = async (req: Request) => {
             return NextResponse.json({ error: "Invalid input" }, { status: 400 });
         }
 
-        // Check if a customer with the same email or fullname already exists
         const existingCustomer = await db.customer.findFirst({
             where: {
                 OR: [
@@ -47,7 +46,6 @@ export const POST = async (req: Request) => {
             return NextResponse.json({ error: "Customer with the same email or fullname already exists" }, { status: 409 });
         }
 
-        // Create the new customer if no conflicts
         const newCustomer = await db.customer.create({ data: { email, fullname, duree } });
         return NextResponse.json(newCustomer, { status: 201 });
 

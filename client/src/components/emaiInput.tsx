@@ -34,7 +34,7 @@ export default function IgyMarinaEmailInputPage() {
       <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-white rounded-xl shadow-md">
         <div className="text-center">
           <Anchor className="h-12 w-12 text-blue-600 mx-auto" />
-          <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-black">Igy Marina Email Signup</h1>
+          <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-black">IGY MARINAS Email Signup</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
