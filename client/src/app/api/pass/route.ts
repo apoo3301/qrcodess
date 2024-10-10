@@ -1,3 +1,4 @@
+import { welcomeTemplate } from '~/lib/template/badge';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -22,9 +23,8 @@ export const POST = async (req: Request) => {
         const mailOptions = {
             from: '"QR PASS" <noreply@example.com>',
             to: email,
-            subject: 'Your Password',
-            text: 'Here is your password...',
-            html: '<b>Here is your password...</b>',
+            subject: 'Welcome to Our Harbour',
+            html: welcomeTemplate,
         };
 
         await transporter.sendMail(mailOptions);
