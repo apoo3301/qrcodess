@@ -38,3 +38,20 @@ export const DELETE = async (req: Request) => {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 };
+
+export const PUT = async (req: Request) => {
+    try {
+        const { id, email, fullname, duree } = await req.json();
+        if (!id || !email || !fullname || typeof duree !== 'number') {
+            return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+        }
+        const updatedCustomer = await db.customer.update({
+            where: { id },
+            data: { email, fullname, duree },
+        });
+        return NextResponse.json(updatedCustomer, { status: 200 });
+    } catch (error) {
+        console.error("PUT /api/customers error:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+};

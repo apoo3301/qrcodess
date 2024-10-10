@@ -22,8 +22,6 @@ import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Badge } from "~/components/ui/badge";
-import Link from "next/link";
 
 export default function CustomerDetailPage({ params }: { params: any }) {
     const { id } = params;
@@ -32,7 +30,6 @@ export default function CustomerDetailPage({ params }: { params: any }) {
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
-    const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
     const [customerData, setCustomerData] = useState({
         id: '',
         email: '',
@@ -40,8 +37,6 @@ export default function CustomerDetailPage({ params }: { params: any }) {
         duration: '',
         createdAt: '',
     });
-    const [customerEmails, setCustomerEmails] = useState<string[]>([]);
-    const [searchTerm, setSearchTerm] = useState(''); // État pour le champ de recherche
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -68,24 +63,6 @@ export default function CustomerDetailPage({ params }: { params: any }) {
         fetchCustomer();
     }, [id, router, toast]);
 
-    useEffect(() => {
-        const fetchEmails = async () => {
-            try {
-                const response = await fetch('/api/customers');
-                if (!response.ok) throw new Error('Failed to fetch emails');
-                const data = await response.json();
-                const sortedEmails = data
-                    .map((customer: any) => customer.email)
-                    .sort((a: { createdAt: string | number | Date; }, b: { createdAt: string | number | Date; }) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-                setCustomerEmails(sortedEmails);
-                setSelectedEmail(customerData.email || '');
-            } catch (error) {
-                console.error('Failed to fetch emails:', error);
-            }
-        };
-        fetchEmails();
-    }, [customerData.email]);
-
     const handleDelete = async () => {
         try {
             const response = await fetch(`/api/customers`, {
@@ -107,7 +84,7 @@ export default function CustomerDetailPage({ params }: { params: any }) {
     const handleSaveCustomer = async () => {
         try {
             const response = await fetch(`/api/customers`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -126,37 +103,30 @@ export default function CustomerDetailPage({ params }: { params: any }) {
             toast({ description: `Failed to update customer: ${errorMessage}`, variant: 'destructive' });
         }
     };
+    
 
     const handleEditCustomer = () => {
         setIsEditModalOpen(true);
     };
 
-    const handleEmailSelect = (email: string) => {
-        setSelectedEmail(email);
-        setIsEmailDialogOpen(true);
-    };
-
     const send = async () => {
-        if (selectedEmail) {
+        if (customerData.email) {
             try {
                 await fetch('/api/send-pass', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email: selectedEmail }),
+                    body: JSON.stringify({ email: customerData.email }),
                 });
                 toast({ description: 'Your message has been sent.', variant: 'default', title: 'Email sent' });
             } catch (error) {
                 toast({ variant: 'destructive', title: 'Uh oh! Something went wrong.', description: 'There was a problem with your request.' });
             }
         } else {
-            console.error('No email selected');
+            console.error('No email available');
         }
     };
-
-    // Filtrer les emails en fonction de la recherche
-    const filteredEmails = customerEmails.filter(email => email.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
         <div className="grid gap-6 md:grid-cols-[1fr_300px] max-w-6xl mx-auto px-4 py-8 md:px-6">
@@ -176,11 +146,6 @@ export default function CustomerDetailPage({ params }: { params: any }) {
             </Card>
 
             <div className="flex flex-col gap-4">
-                {/* <Input
-                    placeholder="Search email..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                /> */}
                 <Button onClick={handleEditCustomer} variant="outline">
                     <FilePenIcon className="mr-2 h-4 w-4" /> Edit Customer
                 </Button>
@@ -207,15 +172,13 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline">
-                            Send Password <ChevronDownIcon className="ml-2 h-4 w-4" />
+                            Send QR Code <ChevronDownIcon className="ml-2 h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        {filteredEmails.map((email) => (
-                            <DropdownMenuItem key={email} onClick={() => handleEmailSelect(email)}>
-                                {email}
-                            </DropdownMenuItem>
-                        ))}
+                        <DropdownMenuItem onClick={() => setIsEmailDialogOpen(true)}>
+                            {customerData.email}
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -257,7 +220,7 @@ export default function CustomerDetailPage({ params }: { params: any }) {
                         <DialogTitle>Send Password</DialogTitle>
                     </DialogHeader>
                     <DialogDescription>
-                        <p>Are you sure you want to send the password to <strong>{selectedEmail}</strong>?</p>
+                        <p>Are you sure you want to send the password to <strong>{customerData.email}</strong>?</p>
                     </DialogDescription>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsEmailDialogOpen(false)}>
