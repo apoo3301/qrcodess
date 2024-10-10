@@ -6,7 +6,6 @@
 
 export const publicRoutes = [
   "/",
-  //  place email confirmation link/route here so that both logged in and logged out users can access it, instead of authRoutes where only logged out users can access
   "/auth/new-verification",
 ];
 

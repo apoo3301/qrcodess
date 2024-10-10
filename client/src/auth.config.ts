@@ -30,7 +30,6 @@ export default {
 
           const user = await getUserByEmail(email);
 
-          // user has no password if using other providers like Github/Google
           if (!user || !user.password) return null;
 
           const passwordsMatch = await bcrypt.compare(password, user.password);

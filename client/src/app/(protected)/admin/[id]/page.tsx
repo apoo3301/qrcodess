@@ -46,7 +46,6 @@ const CustomerPage = ({ params }: { params: { id: string } }) => {
       <p><strong>Email:</strong> {customer.email}</p>
       <p><strong>Full Name:</strong> {customer.fullname}</p>
       <p><strong>Duration:</strong> {customer.duree} months</p>
-      {/* Ajoutez d'autres informations si nécessaire */}
     </div>
   );
 };
