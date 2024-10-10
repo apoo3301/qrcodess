@@ -124,7 +124,7 @@ export function UserInfo({ user, label }: UserInfoProps) {
                 Admin
               </Button>
               </Link>
-              <Link href="/admin">
+              <Link href="/portal">
               <Button variant="outline" className="w-full justify-start border-gray-300 hover:bg-gray-100">
                 <FcCustomerSupport className="mr-2 h-4 w-4" />
                 Portal
