@@ -1,7 +1,6 @@
 export const welcomeTemplate = `
 <!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
- 
 <head>
     <title>Welcome</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -41,7 +40,6 @@ export const welcomeTemplate = `
         }
     </style>
 </head>
- 
 <body>
     <div class="container">
         <div class="header">
@@ -50,12 +48,11 @@ export const welcomeTemplate = `
         <div class="description">
             Scan the QR code below to access our harbour:
         </div>
-        <img src=/badge.png"" alt="QR Code" class="qr-image">
+        <img src="https://qrcodess-rho.vercel.app/badge.png" alt="QR Code" class="qr-image">
         <div class="footer">
             If you have any questions, please contact us at support@example.com.
         </div>
     </div>
 </body>
- 
 </html>
-`
+`;
