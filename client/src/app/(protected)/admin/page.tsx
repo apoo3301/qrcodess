@@ -19,7 +19,7 @@ export default function AdminPage() {
 
   return (
     <div className="bg-white p-8 h-screen">
-      <CustomersTable onAddCustomer={() => router.refresh()} />
+      <CustomersTable />
     </div>
   );
 }

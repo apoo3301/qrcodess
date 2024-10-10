@@ -12,11 +12,7 @@ interface Customer {
   fullname: string;
 }
 
-interface CustomersTableProps {
-  onAddCustomer: () => void;
-}
-
-export default function CustomersTable({ onAddCustomer }: CustomersTableProps) {
+export default function CustomersTable() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -24,16 +20,17 @@ export default function CustomersTable({ onAddCustomer }: CustomersTableProps) {
   const [fullname, setFullname] = useState<string>("");
   const [duree, setDuree] = useState<number>(0);
 
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch("/api/customers");
+      const data = await response.json();
+      setCustomers(data);
+    } catch {
+      setError("Error fetching customer data");
+    }
+  };
+
   useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await fetch("/api/customers");
-        const data = await response.json();
-        setCustomers(data);
-      } catch {
-        setError("Error fetching customer data");
-      }
-    };
     fetchCustomers();
   }, []);
 
@@ -48,7 +45,7 @@ export default function CustomersTable({ onAddCustomer }: CustomersTableProps) {
     setEmail("");
     setFullname("");
     setDuree(0);
-    onAddCustomer();
+    await fetchCustomers();
   };
 
   const handleCustomerClick = (id: string) => {
