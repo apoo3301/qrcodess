@@ -233,7 +233,7 @@ export default function CustomerDetailPage({ params }: { params: any }) {
             }}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Send Password</DialogTitle>
+                        <DialogTitle>Send Pass</DialogTitle>
                     </DialogHeader>
                     <DialogDescription>
                         <p>Are you sure you want to send the password to <strong>{customerData.email}</strong>?</p>
