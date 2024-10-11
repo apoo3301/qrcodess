@@ -1,6 +1,7 @@
 import { welcomeTemplate } from '~/lib/template/badge';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import fetch from 'node-fetch';
 
 export const POST = async (req: Request) => {
     try {
@@ -9,6 +10,11 @@ export const POST = async (req: Request) => {
         if (!email) {
             return NextResponse.json({ error: "Email is required" }, { status: 400 });
         }
+
+        const imageUrl = 'https://qrcodess-rho.vercel.app/badge.png';
+        const response = await fetch(imageUrl);
+        const imageBuffer = await response.arrayBuffer();
+        const imageBase64 = Buffer.from(imageBuffer).toString('base64');
 
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -23,7 +29,7 @@ export const POST = async (req: Request) => {
         const mailOptions = {
             from: '"QR PASS" <noreply@example.com>',
             to: email,
-            subject: 'Welcome to Our Harbour',
+            subject: 'Your QR Code',
             html: welcomeTemplate,
         };
 
